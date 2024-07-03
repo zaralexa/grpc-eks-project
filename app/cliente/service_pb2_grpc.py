@@ -30,7 +30,7 @@ if _version_not_supported:
     )
 
 
-class MyServiceStub(object):
+class GreeterStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -40,13 +40,13 @@ class MyServiceStub(object):
             channel: A grpc.Channel.
         """
         self.SayHello = channel.unary_unary(
-                '/MyService/SayHello',
+                '/helloworld.Greeter/SayHello',
                 request_serializer=service__pb2.HelloRequest.SerializeToString,
-                response_deserializer=service__pb2.HelloResponse.FromString,
+                response_deserializer=service__pb2.HelloReply.FromString,
                 _registered_method=True)
 
 
-class MyServiceServicer(object):
+class GreeterServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def SayHello(self, request, context):
@@ -56,22 +56,22 @@ class MyServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_MyServiceServicer_to_server(servicer, server):
+def add_GreeterServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SayHello': grpc.unary_unary_rpc_method_handler(
                     servicer.SayHello,
                     request_deserializer=service__pb2.HelloRequest.FromString,
-                    response_serializer=service__pb2.HelloResponse.SerializeToString,
+                    response_serializer=service__pb2.HelloReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'MyService', rpc_method_handlers)
+            'helloworld.Greeter', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('MyService', rpc_method_handlers)
+    server.add_registered_method_handlers('helloworld.Greeter', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class MyService(object):
+class Greeter(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -88,9 +88,9 @@ class MyService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/MyService/SayHello',
+            '/helloworld.Greeter/SayHello',
             service__pb2.HelloRequest.SerializeToString,
-            service__pb2.HelloResponse.FromString,
+            service__pb2.HelloReply.FromString,
             options,
             channel_credentials,
             insecure,

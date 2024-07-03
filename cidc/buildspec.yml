@@ -5,18 +5,33 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
-      - pip install grpcio grpcio-tools
-      - pip install boto3
+      - echo "Instalando dependencias"
+      - pip install grpcio grpcio-tools boto3
   pre_build:
     commands:
-      - echo "Preparing to deploy"
+      - echo "Autenticando en AWS ECR"
+      - $(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com)
+      - echo "Descargando Terraform"
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip
+      - unzip terraform.zip
+      - mv terraform /usr/local/bin/
+      - terraform -v
   build:
     commands:
-      - echo "Building Docker image"
-      - docker build -t <DOCKER_IMAGE> .
+      - echo "Construyendo la imagen Docker"
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/grpc-server:latest -f applications/server/Dockerfile applications/server
       - echo "Pushing Docker image to ECR"
-      - $(aws ecr get-login --no-include-email --region us-east-1)
-      - docker push <DOCKER_IMAGE>
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/grpc-server:latest
   post_build:
     commands:
-      - echo "Deployment finished"
+      - echo "Desplegando con Terraform"
+      - cd terraform
+      - terraform init
+      - terraform apply -auto-approve
+artifacts:
+  files:
+    - applications/**
+    - modules/**
+    - k8s/**
+    - terraform/**
+  discard-paths: yes
