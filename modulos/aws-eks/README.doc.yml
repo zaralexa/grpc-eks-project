@@ -1,0 +1,48 @@
+version: 0
+sections:
+  # utiliza un template que se rendeara y se agregara al documento
+  - type: template
+    # ID del template que se usara
+    # Si quiere usar un template propio puede utilizar el campo template_file
+    # template_file: path_al_template
+    template_id: header
+    # Los data source son archivos con datos que se inyectaran al template. En el template estaran disponible como un datasource mediante la key
+    data_source:
+      # esto es importante si el template de header hace uso de datos que estan en pipeline.yml
+      pipe: pipeline.yml
+    # Conjunto de valores que se inyectaran al template como un datasource llamado input
+    input_data_source:
+      description: Modulo para crear una VPC.
+  # agrega una tabla de contenidos al documento
+  - type: toc
+  # agrega al markdown el contenido de un archivo o lo que tiene el campo content
+  - type: raw
+    content: |
+      ## Usage
+      Para implementar correctamente el módulo debemos tener en cuenta una serie de requisitos y dependencias entre los diferentes recursos a ser creados.
+
+      Este módulo de Terraform crea una llave de KMS junto con una política de uso de la llave. La política permite diferentes niveles de acceso incluyendo propietarios, administradores y usuarios.
+    
+      ### Explicación de las uso de Politicas
+
+     
+      Aquí podras ver varios ejemplos de diferentes implementaciones, con sus respectivas restricciones, adapta los ejemplos a tus necesidades y respeta las dependencias entre los módulos para evitar errores de despliegue.
+      
+      Para usar este módulo, inclúyelo en tu configuración de Terraform especificando los parámetros necesarios. A continuación, se proporciona un ejemplo de cómo implementar un certificado público con validación de DNS.
+
+      ### Ejemplo de Uso Básico
+
+        ```hcl
+        
+        ```
+
+      ### Parámetros permitidos:
+      Los parámetros permitidos por el módulo son los siguientes:
+
+      - create( bool):
+
+
+  - type: terraform_docs
+  # agrega documentacion de como contribuir en un modulo de terraform
+  - type: template
+    template_id: terraform_contrib  
