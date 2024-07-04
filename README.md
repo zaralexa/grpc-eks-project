@@ -72,8 +72,8 @@ Para que AWS CodeBuild pueda acceder a tus recursos de AWS, debes configurar los
 2.	Haz clic en "Settings".
 3.	En el menú lateral, selecciona "Secrets and variables" > "Actions".
 4.	Añade los siguientes secretos:
- - AWS_ACCESS_KEY_ID
- - AWS_SECRET_ACCESS_KEY
+ - `AWS_ACCESS_KEY_ID`
+ - `AWS_SECRET_ACCESS_KEY
  - AWS_ACCOUNT_ID
 ### Despliegue Automático con CodeBuild
 Cada vez que realices un push a la rama main, AWS CodeBuild ejecutará el pipeline definido en buildspec.yml para construir y desplegar automáticamente la aplicación en AWS.
@@ -99,7 +99,9 @@ docker build -t grpc-server.
 Suba la imagen a Amazon ECR. Asegúrate de haber creado el repositorio en ECR como parte del paso anterior de Terraform.
 
 Autenticarse en ECR
+```bash
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+```
 
 Etiquetar y subir la imagen
 ```bash
