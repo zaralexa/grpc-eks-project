@@ -23,6 +23,8 @@ El objetivo del reto técnico es desplegar dos aplicaciones en Python que se com
 
 ### Diseño de la Red
 
+![Networking](networking.png)
+
 1. **VPC**: Se eligió una VPC para proporcionar un entorno de red virtual aislado, garantizando el control total sobre el tráfico de red y la seguridad de los recursos. La VPC permite definir subnets, tablas de rutas y gateways que son esenciales para una infraestructura de red robusta y segura.
 
 2. **Subnets**: Las subnets se dividen en públicas y privadas. Las subnets públicas alojan el ALB, lo que permite que el tráfico de Internet acceda a nuestras aplicaciones. Los nodos de trabajo del clúster de EKS se despliegan en subnets privadas, mejorando la seguridad al restringir el acceso directo desde Internet.
@@ -56,3 +58,63 @@ Primero, clona el repositorio en tu máquina local:
 ```bash
 git clone https://github.com/zaralexa/grpc-eks-project.git
 cd grpc-eks-project
+```
+### Configurar Secretos en GitHub
+
+Para que AWS CodeBuild pueda acceder a tus recursos de AWS, debes configurar los secretos en GitHub:
+1.	Ve a tu repositorio en GitHub.
+2.	Haz clic en "Settings".
+3.	En el menú lateral, selecciona "Secrets and variables" > "Actions".
+4.	Añade los siguientes secretos:
+o	AWS_ACCESS_KEY_ID
+o	AWS_SECRET_ACCESS_KEY
+o	AWS_ACCOUNT_ID
+### Despliegue Automático con CodeBuild
+Cada vez que realices un push a la rama main, AWS CodeBuild ejecutará el pipeline definido en buildspec.yml para construir y desplegar automáticamente la aplicación en AWS.
+### Despliegue Manual
+Si prefieres desplegar manualmente, sigue estos pasos:
+1. Inicializar y Aplicar Terraform
+Navega al directorio terraform y ejecuta los siguientes comandos para inicializar y aplicar la configuración de Terraform, que creará la VPC, subnets, clúster de EKS, repositorio ECR y proyecto de CodeBuild.
+
+```bash
+cd terraform
+terraform init
+terraform apply -auto-approve
+```
+Este comando creará la infraestructura necesaria en AWS.
+
+2. Construir y Empujar la Imagen Docker
+Navega al directorio del servidor y construye la imagen Docker:
+
+```bash
+cd ../applications/server
+docker build -t grpc-server.
+```
+Suba la imagen a Amazon ECR. Asegúrate de haber creado el repositorio en ECR como parte del paso anterior de Terraform.
+
+# Autenticarse en ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+
+# Etiquetar y subir la imagen
+```bash
+docker tag grpc-server:latest <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/grpc-server:latest
+docker push <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/grpc-server:latest
+```
+
+3. Aplicar Configuraciones de Kubernetes
+Navega al directorio k8s y aplica las configuraciones de Kubernetes para desplegar las aplicaciones en el clúster de EKS.
+```bash
+cd ../../k8s
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml
+```
+Estos comandos crean el despliegue, el servicio y la configuración de Ingress para el ALB en tu clúster de EKS.
+
+Verificación del Despliegue
+1.	Verificar los Pods:
+kubectl get pods
+2.	Verificar el Servicio:
+kubectl get services
+3.	Verificar el Ingress:
+kubectl get ingress
