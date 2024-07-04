@@ -2,18 +2,20 @@ provider "aws" {
   region = "us-east-1"
 }
 
+/*
 terraform {
   backend "s3" {
-    bucket = "my-terraform-state-bucket"
+    bucket = "zb-terraform-state-bucket"
     key    = "terraform/eks_project/terraform.tfstate"
     region = "us-east-1"
   }
 }
+*/
 
 module "s3" {
   source = "./s3"
 
-  bucket = "my-terraform-state-bucket"
+  bucket = "zb-terraform-state-bucket"
 }
 
 module "networking" {
@@ -49,7 +51,7 @@ module "ecr" {
 
 module "codebuild" {
   source = "../modules/codebuild"
-  aws_account_id = "your-aws-account-id"
+  aws_account_id = "471112701387"
   github_repository_url = "https://github.com/zaralexa/grpc-eks-project"
   tags = {
     Environment = "Production"
