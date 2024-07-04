@@ -16,6 +16,12 @@ Este proyecto despliega dos aplicaciones en Python que se comunican mediante el 
 ![Diagrama de Arquitectura](diagrama.png)
 
 La arquitectura diseñada garantiza un despliegue seguro, escalable y altamente disponible de las aplicaciones gRPC en EKS. La integración de CI/CD, la gestión eficiente de contenedores, el uso estratégico de instancias EC2 con autoescalado y la configuración de red distribuida en múltiples Zonas de Disponibilidad aseguran que la solución cumpla con todos los requisitos del reto técnico de manera eficiente y efectiva.
+### Flujo CI/CD y Gestión de Contenedores
+Para garantizar un flujo CI/CD eficiente, se integró GitHub con CodeBuild. Cada vez que se realiza un push a la rama principal, CodeBuild se encarga de construir, probar y desplegar automáticamente las aplicaciones en el clúster de EKS. Las imágenes Docker generadas se almacenan y versionan en Amazon Elastic Container Registry (ECR), asegurando una gestión segura y eficiente de los contenedores.
+### Uso de EC2 para EKS con Autoescalado
+La decisión de utilizar instancias EC2 para desplegar el clúster de EKS se basó en la necesidad de un control granular sobre los recursos y la capacidad de autoescalado. Las instancias EC2 proporcionan flexibilidad en la elección de tipos de instancia, permitiendo optimizar costos y rendimiento según las necesidades específicas de las aplicaciones. Además, el autoescalado asegura que el clúster pueda ajustarse dinámicamente a las cargas de trabajo variables, manteniendo la disponibilidad y el rendimiento sin intervención manual.
+### Gestión de Infraestructura con Terraform
+Toda la infraestructura se gestiona con Terraform, y el estado se almacena en Amazon S3. Esto no solo permite una gestión consistente y colaborativa de la infraestructura, sino que también asegura que cualquier cambio en la configuración esté sincronizado y versionado adecuadamente.
 
 ## Networking del Proyecto gRPC en EKS
 
@@ -66,9 +72,9 @@ Para que AWS CodeBuild pueda acceder a tus recursos de AWS, debes configurar los
 2.	Haz clic en "Settings".
 3.	En el menú lateral, selecciona "Secrets and variables" > "Actions".
 4.	Añade los siguientes secretos:
-o	AWS_ACCESS_KEY_ID
-o	AWS_SECRET_ACCESS_KEY
-o	AWS_ACCOUNT_ID
+ - AWS_ACCESS_KEY_ID
+ - AWS_SECRET_ACCESS_KEY
+ - AWS_ACCOUNT_ID
 ### Despliegue Automático con CodeBuild
 Cada vez que realices un push a la rama main, AWS CodeBuild ejecutará el pipeline definido en buildspec.yml para construir y desplegar automáticamente la aplicación en AWS.
 ### Despliegue Manual
@@ -112,9 +118,9 @@ kubectl apply -f ingress.yaml
 Estos comandos crean el despliegue, el servicio y la configuración de Ingress para el ALB en tu clúster de EKS.
 
 Verificación del Despliegue
-a.	Verificar los Pods
-b.	Verificar el Servicio
-c.	Verificar el Ingress
+ - Verificar los Pods
+ - Verificar el Servicio
+ - Verificar el Ingress
 ```bash
 kubectl get pods
 kubectl get services
