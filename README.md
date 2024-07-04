@@ -9,7 +9,7 @@ Este proyecto despliega dos aplicaciones en Python que se comunican mediante el 
 - `k8s/`: Contiene los archivos de configuración de Kubernetes.
 - `modules/`: Contiene los módulos de Terraform.
 - `terraform/`: Contiene el archivo principal de Terraform que utiliza los módulos.
-- `architecture-diagram.png`: Diagrama de la arquitectura.
+
 
 ## Diagrama de Arquitectura
 
