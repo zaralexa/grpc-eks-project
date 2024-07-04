@@ -1,55 +1,58 @@
 # Proyecto gRPC en EKS
 
-Este proyecto despliega dos aplicaciones en Python que se comunican mediante el protocolo gRPC en un clúster de EKS. Las aplicaciones están expuestas a través de un Application Load Balancer (ALB).
+Este proyecto despliega dos aplicaciones en Python que se comunican mediante el protocolo gRPC en un clúster de Amazon Elastic Kubernetes Service (EKS). Las aplicaciones están expuestas a través de un Application Load Balancer (ALB).
 
 ## Estructura del Proyecto
 
 - `applications/`: Contiene las aplicaciones gRPC en Python.
-  - `client/`: Aplicación cliente.
-  - `server/`: Aplicación servidor.
+- `cicd/`: Contiene la configuración para CodeBuild.
+- `k8s/`: Contiene los archivos de configuración de Kubernetes.
 - `modules/`: Contiene los módulos de Terraform.
-  - `networking/`: Módulo de Terraform para la VPC.
-  - `eks/`: Módulo de Terraform para el clúster de EKS.
-- `k8s/`: Archivos de configuración de Kubernetes.
-- `cicd/`: Configuración de CI/CD con CodeBuild.
-- `terraform/`: Archivos principales de Terraform.
-- `.github/workflows/`: Configuración de GitHub Actions.
-- `README.md`: Documentación del proyecto.
+- `terraform/`: Contiene el archivo principal de Terraform que utiliza los módulos.
 - `architecture-diagram.png`: Diagrama de la arquitectura.
-
-## Prerequisitos
-
-- AWS CLI configurado.
-- Terraform instalado.
-- Docker instalado.
-- Credenciales de AWS configuradas.
-
-## Configuración de Secretos en GitHub
-
-1. Ve a tu repositorio en GitHub.
-2. Haz clic en "Settings".
-3. En el menú lateral, selecciona "Secrets and variables" > "Actions".
-4. Añade los siguientes secretos:
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
-   - `AWS_ACCOUNT_ID`
-
-## Despliegue Automático
-
-Cada vez que se realice un push a la rama `main`, GitHub Actions ejecutará el workflow definido en `.github/workflows/deploy.yml` para construir y desplegar la aplicación en AWS.
 
 ## Diagrama de Arquitectura
 
-![Diagrama de Arquitectura](architecture-diagram.png)
+![Diagrama de Arquitectura](diagrama.png)
 
-## Explicación del Networking
+La arquitectura diseñada garantiza un despliegue seguro, escalable y altamente disponible de las aplicaciones gRPC en EKS. La integración de CI/CD, la gestión eficiente de contenedores, el uso estratégico de instancias EC2 con autoescalado y la configuración de red distribuida en múltiples Zonas de Disponibilidad aseguran que la solución cumpla con todos los requisitos del reto técnico de manera eficiente y efectiva.
 
-- **VPC**: Proporciona una red privada para los recursos de AWS.
-- **Subnets Públicas**: Permiten el acceso a Internet a través del Internet Gateway.
-- **Subnets Privadas**: Aisladas del acceso directo a Internet, las instancias de EKS se despliegan aquí.
-- **Internet Gateway**: Permite que las instancias en las subnets públicas tengan acceso a Internet.
-- **NAT Gateway**: Permite que las instancias en las subnets privadas accedan a Internet para actualizaciones y otras actividades necesarias.
-- **Route Tables**: Configuran las rutas para el tráfico entre las subnets y hacia Internet.
+## Networking del Proyecto gRPC en EKS
 
-## Autores
-Creado po Zaret Burgos
+El objetivo del reto técnico es desplegar dos aplicaciones en Python que se comuniquen mediante el protocolo gRPC en un clúster de EKS, con la exposición a través de un Application Load Balancer (ALB). La configuración de la red se diseñó para cumplir con estos requisitos, asegurando que las aplicaciones sean seguras, escalables y eficientes.
+
+### Diseño de la Red
+
+1. **VPC**: Se eligió una VPC para proporcionar un entorno de red virtual aislado, garantizando el control total sobre el tráfico de red y la seguridad de los recursos. La VPC permite definir subnets, tablas de rutas y gateways que son esenciales para una infraestructura de red robusta y segura.
+
+2. **Subnets**: Las subnets se dividen en públicas y privadas. Las subnets públicas alojan el ALB, lo que permite que el tráfico de Internet acceda a nuestras aplicaciones. Los nodos de trabajo del clúster de EKS se despliegan en subnets privadas, mejorando la seguridad al restringir el acceso directo desde Internet.
+
+3. **Internet Gateway**: Proporciona acceso a Internet para las subnets públicas, permitiendo que el ALB reciba y responda al tráfico de Internet.
+
+4. **NAT Gateway**: Permite que los nodos en subnets privadas accedan a Internet de manera segura para tareas como actualizaciones del sistema y descargas de dependencias.
+
+5. **Tablas de Rutas**: Configuran el enrutamiento del tráfico dentro de la VPC, dirigiendo el tráfico a través del Internet Gateway y el NAT Gateway según corresponda.
+
+6. **Zonas de Disponibilidad (AZs)**: La infraestructura de red se despliega en dos Zonas de Disponibilidad para asegurar alta disponibilidad y tolerancia a fallos. Esto asegura que las aplicaciones permanezcan accesibles incluso en caso de problemas en una de las zonas.
+
+## Guía de Despliegue
+
+### Prerequisitos
+
+Antes de comenzar, asegúrate de tener instaladas y configuradas las siguientes herramientas en tu máquina local:
+
+- AWS CLI
+- Terraform
+- Docker
+- kubectl
+- Git
+
+Además, debes configurar tus credenciales de AWS utilizando `aws configure` para que AWS CLI pueda autenticarte.
+
+### Clonar el Repositorio
+
+Primero, clona el repositorio en tu máquina local:
+
+```bash
+git clone https://github.com/zaralexa/grpc-eks-project.git
+cd grpc-eks-project
