@@ -92,10 +92,10 @@ docker build -t grpc-server.
 ```
 Suba la imagen a Amazon ECR. Asegúrate de haber creado el repositorio en ECR como parte del paso anterior de Terraform.
 
-# Autenticarse en ECR
+Autenticarse en ECR
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
 
-# Etiquetar y subir la imagen
+Etiquetar y subir la imagen
 ```bash
 docker tag grpc-server:latest <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/grpc-server:latest
 docker push <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/grpc-server:latest
@@ -112,9 +112,11 @@ kubectl apply -f ingress.yaml
 Estos comandos crean el despliegue, el servicio y la configuración de Ingress para el ALB en tu clúster de EKS.
 
 Verificación del Despliegue
-1.	Verificar los Pods:
+a.	Verificar los Pods
+b.	Verificar el Servicio
+c.	Verificar el Ingress
+```bash
 kubectl get pods
-2.	Verificar el Servicio:
 kubectl get services
-3.	Verificar el Ingress:
 kubectl get ingress
+```
